@@ -1,0 +1,92 @@
+<html>
+
+<head>
+    <title>发布合约</title>
+    <script src="jquery-3.3.1.min.js"></script>
+    <style>
+        input,
+        textarea {
+            width: 800px;
+        }
+    </style>
+</head>
+
+<body>
+<div>
+    <label for="privateKey">私钥：</label>
+    <input type="text" id="privateKey" value="262646e248fa61a14b269a79eae1283dfb164eaa5adbe7168029467b3c04913e"/>
+</div>
+<div>
+    <label for="address">地址：</label>
+    <input type="text" id="address" value="0xd7f3fa13b2328da60475843af7ca915f66025640"/>
+</div>
+<div>
+    <label for="abi">ABI:</label>
+    <br/>
+    <textarea id="abi" rows="10" cols="100"></textarea>
+</div>
+<div>
+    <label for="data">DATA:</label>
+    <br/>
+    <textarea id="data" rows="10" cols="100"></textarea>
+</div>
+<div>
+    <input type="text" id="p1" value="10000"/>
+    <input type="text" id="p2" value="0x6378d12c1126506e06c65806f9763900ed58d20c"/>
+</div>
+<div>
+    <input type="button" value="发布" onclick="deployContract()"/>
+</div>
+<div>
+    <label for="result">RESULT:</label>
+    <br/>
+    <textarea id="result" rows="10" cols="100"></textarea>
+</div>
+<div id="appAddress">0x459701c0a5e2408b16c435d624148bf0b674fdad</div>
+<div id="controllerAddress">0x2a20331f3083224be0a2030bdb591cc431cb09ee</div>
+<div id="cnyAddress">0x498c2d0bc491b75a929b18fb5264cc877931332b</div>
+<div id="erc721Address">0x498c2d0bc491b75a929b18fb5264cc877931332b</div>
+<script type="text/javascript">
+    function deployContract() {
+        $.ajax({
+            url: "http://47.100.194.102:9090/deployContract",
+            data: JSON.stringify(
+                {
+                    privateKey: $("#privateKey").val(),
+                    address: $("#address").val(),
+                    data: $("#data").val(),
+                    abi: $("#abi").val(),
+                    /*params: {
+                        ire: '0xadc29904c92ac653c33a2d338951a80d279ee52c',
+                        cny: '0x0f2b0461d231791b6a06b830cc87ccf7e2c265d5'
+                    }*/
+                    /*params:
+                        {
+                            symbol: "SMT001",
+                            decimals:
+                                2,
+                            totalSupply:
+                                3330
+                        }*/
+                    /*params:
+                        {
+                            p1: 32,
+                            p2: 0,
+                            p3: 600,
+                            p5: 50,
+                            ire: '0xadc29904c92ac653c33a2d338951a80d279ee52c',
+                            cny: '0x0f2b0461d231791b6a06b830cc87ccf7e2c265d5'
+                        }*/
+                }),
+            type: "POST",
+            dataType:
+                'JSON',
+            contentType:
+                "application/json;charset=utf-8",
+            success: function (r) {
+                $("#result").val(JSON.stringify(r));
+            }
+        });
+    }</script>
+</body>
+</html>

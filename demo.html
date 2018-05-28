@@ -1,0 +1,596 @@
+<html>
+
+<head>
+    <title>租金发放演示</title>
+    <script src="jquery-3.3.1.min.js"></script>
+    <style>
+        input {
+            width: 300px;
+        }
+
+        textarea {
+            width: 1200px;
+        }
+
+        input[type='button'] {
+            width: 140px;
+        }
+    </style>
+    <script type="text/javascript">
+        var cnyAbi = "[{\"constant\":false,\"inputs\":[{\"name\":\"_newOperator\",\"type\":\"address\"}],\"name\":\"changeOperator\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTotalBalance\",\"outputs\":[{\"name\":\"_totalBalance\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getSymbol\",\"outputs\":[{\"name\":\"_symbol\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTotalHolders\",\"outputs\":[{\"name\":\"count\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"MAX_UINT256\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getHolders\",\"outputs\":[{\"name\":\"holders\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"name\":\"balance\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"acceptOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"to\",\"type\":\"address\"},{\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"name\":\"success\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"accountAt\",\"outputs\":[{\"name\":\"addr\",\"type\":\"address\"},{\"name\":\"balance\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getDecimals\",\"outputs\":[{\"name\":\"_decimals\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"message\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"success\",\"type\":\"bool\"}],\"name\":\"Mint\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"to\",\"type\":\"address\"}],\"name\":\"OperatorChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"to\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"to\",\"type\":\"address\"}],\"name\":\"OwnershipTransferring\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"message\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"success\",\"type\":\"bool\"}],\"name\":\"Transfer\",\"type\":\"event\"}]";
+        var ireAbi = "[{\"constant\":true,\"inputs\":[{\"name\":\"_interfaceID\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTotalBalance\",\"outputs\":[{\"name\":\"_totalBalance\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getSymbol\",\"outputs\":[{\"name\":\"_symbol\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"adr\",\"type\":\"address\"}],\"name\":\"isContract\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTotalHolders\",\"outputs\":[{\"name\":\"count\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"MAX_UINT256\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getHolders\",\"outputs\":[{\"name\":\"holders\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"name\":\"balance\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"acceptOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"to\",\"type\":\"address\"},{\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"name\":\"success\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTotalSupply\",\"outputs\":[{\"name\":\"_totalSupply\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"newOwner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"accountAt\",\"outputs\":[{\"name\":\"addr\",\"type\":\"address\"},{\"name\":\"balance\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getDecimals\",\"outputs\":[{\"name\":\"_decimals\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"symbol\",\"type\":\"string\"},{\"name\":\"decimals\",\"type\":\"uint256\"},{\"name\":\"totalSupply\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"_from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"_to\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"message\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"success\",\"type\":\"bool\"}],\"name\":\"Transfer\",\"type\":\"event\"}]";
+        var lotteryAbi = "[{\"constant\":true,\"inputs\":[],\"name\":\"getUnitPrice\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"sender\",\"type\":\"address\"},{\"name\":\"value\",\"type\":\"uint256\"},{\"name\":\"token\",\"type\":\"address\"}],\"name\":\"tokenFallback\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"draw\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"key\",\"type\":\"uint256\"},{\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getLuckyNumbersOfExponent\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTotalPurchased\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"adr\",\"type\":\"address\"}],\"name\":\"hasTransfer\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"close\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"key\",\"type\":\"uint256\"}],\"name\":\"getWinnerNumbers\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"finalize\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getStatus\",\"outputs\":[{\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getUserNumbers\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"calculateShares\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getAssetOwner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"timeStamp\",\"type\":\"uint256\"},{\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"purchase\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getUserShares\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"allocateShares\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"acceptOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"adr\",\"type\":\"address\"}],\"name\":\"getUserNumbersOf\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getUserLimits\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getCnyToken\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"key\",\"type\":\"uint256\"}],\"name\":\"getLuckyNumbers\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"adr\",\"type\":\"address\"}],\"name\":\"getUserShares\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"},{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"start\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"max\",\"type\":\"uint256\"}],\"name\":\"findWinCount\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTotalLimits\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTotalLeft\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"newOwner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTotalShares\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getExponents\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getWinnerKeys\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getUserLeft\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getDecimals\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getAssetToken\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"min\",\"type\":\"uint256\"},{\"name\":\"max\",\"type\":\"uint256\"}],\"name\":\"findWinCount\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"_totalSupply\",\"type\":\"uint256\"},{\"name\":\"_decimals\",\"type\":\"uint256\"},{\"name\":\"_unitPrice\",\"type\":\"uint256\"},{\"name\":\"_totalLimits\",\"type\":\"uint256\"},{\"name\":\"_userLimits\",\"type\":\"uint256\"},{\"name\":\"_assetToken\",\"type\":\"address\"},{\"name\":\"_cnyToken\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"message\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"success\",\"type\":\"bool\"}],\"name\":\"Started\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"message\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"success\",\"type\":\"bool\"}],\"name\":\"Purchased\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"message\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"success\",\"type\":\"bool\"}],\"name\":\"Closed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"message\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"success\",\"type\":\"bool\"}],\"name\":\"Draw\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"message\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"success\",\"type\":\"bool\"}],\"name\":\"SharesCalculated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"message\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"success\",\"type\":\"bool\"}],\"name\":\"Allocated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"message\",\"type\":\"string\"},{\"indexed\":false,\"name\":\"success\",\"type\":\"bool\"}],\"name\":\"Finalized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"_from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"_to\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"}]";
+        var cnyAddress = "0x0f2b0461d231791b6a06b830cc87ccf7e2c265d5";
+        var ireAddress = "0x86ddcc40b7ff821335f2ecc1dadd9d9996552572";
+        var lotteryAddress = "0x547e6ca337843f956e73050ec7d0a9e95820b45b";
+
+        var ac1 = "0x55358fc71e8863a36a444c11be8847cb36fa187f";
+        var pk1 = "fe91d4687e448b553cd14f977e4c9d4d3c4d32433336155739ed575fdd55a6b3";
+
+        var ac2 = "0xa9156113040975f19ce3fee209b2546f4e727da7";
+        var pk2 = "2aadfbc7dceeeb00b9054b2cefce40798f4392d61d8dbebd11681064d769a4ed";
+
+        var ac3 = "0x27b2dbea5b532d8e98038b72f67ceebe94f4cda6";
+        var pk3 = "f0f1f4a287589e25ba81d4b5fca2f1d2a8c304e48757ff548772c38ae06ac9a4";
+    </script>
+</head>
+
+<body>
+<div>
+    <label for="privateKey">私钥：</label>
+    <input type="text" id="privateKey" value="2d43e736b6bb8cb269842e28a61128c67a1e61daf3a2c1a6d5e8e40c02ddf7eb"/>
+</div>
+<div>
+    <label for="caller">管理员：</label>
+    <input type="text" id="caller" value="0xfb896078fe4a7447278b38247a0547a8c61f720f"/>
+</div>
+<div>
+    <label for="addressOfEquity">资产合约地址：</label>
+    <input type="text" id="addressOfEquity" value="0xb87a5ca4d3a2e7cc4a1081120478ff11d9215e35"/>
+</div>
+<div>
+    <label for="addressOfRandom">随机数合约地址：</label>
+    <input type="text" id="addressOfRandom" value="0x92fc10d9147cf5963906bd4562eb120cce766b2e"/>
+    <input type="button" value="生成随机数" onclick="generateRandomNumbers()"/>
+    <input type="button" value="测试" onclick="mapInfoRange()"/>
+    <input type="button" value="Loop" onclick="loop()"/>
+</div>
+<div>
+    <label for="addressOfCny">CNY合约地址：</label>
+    <input type="text" id="addressOfCny" value="0xe03e97e90c54eaa375a7a7d296ee3c3b27a68031"/>
+    <input type="button" value="设置CNY地址" onclick="setTokenAddress()"/>
+    <input type="button" value="获取CNY地址" onclick="getTokenAddress()"/>
+</div>
+<div style="display:none">
+    <label for="abi">ABI：</label>
+    <br/>
+    <textarea id="abiOfRandom" rows="10" cols="100">[{"constant":true,"inputs":[{"name":"seed","type":"uint256"},{"name":"count","type":"uint256"},{"name":"min","type":"uint256"},{"name":"max","type":"uint256"},{"name":"distinct","type":"bool"}],"name":"generate","outputs":[{"name":"","type":"uint256[]"}],"payable":false,"stateMutability":"pure","type":"function"}]</textarea>
+</div>
+<div style="display:none">
+    <label for="abi">ABI：</label>
+    <br/>
+    <textarea id="abi" rows="10" cols="100">[{"constant":true,"inputs":[{"name":"_interfaceID","type":"bytes4"}],"name":"supportsInterface","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getSymbol","outputs":[{"name":"_symbol","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"addr","type":"address"}],"name":"isContract","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getTotalHolders","outputs":[{"name":"count","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"MAX_UINT256","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getHolders","outputs":[{"name":"holders","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getTotalSupply","outputs":[{"name":"_totalSupply","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"index","type":"uint256"}],"name":"accountAt","outputs":[{"name":"addr","type":"address"},{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getDecimals","outputs":[{"name":"_decimals","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"symbol","type":"string"},{"name":"decimals","type":"uint256"},{"name":"totalSupply","type":"uint256"},{"name":"_owner","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"},{"indexed":false,"name":"message","type":"string"},{"indexed":false,"name":"success","type":"bool"}],"name":"Transfer","type":"event"}]</textarea>
+</div>
+<div style="display:none">
+    <label for="abiOfCny">ABI：</label>
+    <br/>
+    <textarea id="abiOfCny" rows="10" cols="100">[{"constant":true,"inputs":[{"name":"_interfaceID","type":"bytes4"}],"name":"supportsInterface","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getSymbol","outputs":[{"name":"_symbol","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"addr","type":"address"}],"name":"isContract","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getTotalHolders","outputs":[{"name":"count","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"MAX_UINT256","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"mint","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"value","type":"uint256"}],"name":"burn","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getHolders","outputs":[{"name":"holders","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getTotalSupply","outputs":[{"name":"_totalSupply","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"index","type":"uint256"}],"name":"accountAt","outputs":[{"name":"addr","type":"address"},{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getDecimals","outputs":[{"name":"_decimals","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"},{"indexed":false,"name":"message","type":"string"},{"indexed":false,"name":"success","type":"bool"}],"name":"Mint","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"addr","type":"address"},{"indexed":false,"name":"value","type":"uint256"},{"indexed":false,"name":"message","type":"string"},{"indexed":false,"name":"success","type":"bool"}],"name":"Burned","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"},{"indexed":false,"name":"message","type":"string"},{"indexed":false,"name":"success","type":"bool"}],"name":"Transfer","type":"event"}]</textarea>
+</div>
+<div style="display:none">
+    <label for="abiOfLottery">ABIOfLottery：</label>
+    <br/>
+    <textarea id="abiOfLottery" rows="10" cols="100">[{"constant":false,"inputs":[{"name":"sender","type":"address"},{"name":"value","type":"uint256"},{"name":"token","type":"address"}],"name":"tokenFallback","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"draw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"key","type":"uint256"},{"name":"index","type":"uint256"}],"name":"getLuckyNumbersOfExponent","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getTotalPurchased","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"adr","type":"address"}],"name":"hasTransfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"close","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"key","type":"uint256"}],"name":"getWinnerNumbers","outputs":[{"name":"","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"finalize","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getUserNumbers","outputs":[{"name":"","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"calculateShares","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"timeStamp","type":"uint256"},{"name":"amount","type":"uint256"}],"name":"purchase","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getUserShares","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"allocateShares","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"adr","type":"address"}],"name":"getUserNumbersOf","outputs":[{"name":"","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"key","type":"uint256"}],"name":"getLuckyNumbers","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"adr","type":"address"}],"name":"getUserShares","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"start","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"max","type":"uint256"}],"name":"findWinCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getTotalLeft","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getTotalShares","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getExponents","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getWinnerKeys","outputs":[{"name":"","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getUserLeft","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"min","type":"uint256"},{"name":"max","type":"uint256"}],"name":"findWinCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"_totalSupply","type":"uint256"},{"name":"_decimals","type":"uint256"},{"name":"_unitPrice","type":"uint256"},{"name":"_totalLimits","type":"uint256"},{"name":"_userLimits","type":"uint256"},{"name":"_assetToken","type":"address"},{"name":"_cnyToken","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"sender","type":"address"},{"indexed":false,"name":"message","type":"string"},{"indexed":false,"name":"success","type":"bool"}],"name":"Started","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"sender","type":"address"},{"indexed":false,"name":"message","type":"string"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"success","type":"bool"}],"name":"Purchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"sender","type":"address"},{"indexed":false,"name":"message","type":"string"},{"indexed":false,"name":"success","type":"bool"}],"name":"Closed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"sender","type":"address"},{"indexed":false,"name":"message","type":"string"},{"indexed":false,"name":"success","type":"bool"}],"name":"Draw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"sender","type":"address"},{"indexed":false,"name":"message","type":"string"},{"indexed":false,"name":"success","type":"bool"}],"name":"SharesCalculated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"sender","type":"address"},{"indexed":false,"name":"message","type":"string"},{"indexed":false,"name":"success","type":"bool"}],"name":"Allocated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"sender","type":"address"},{"indexed":false,"name":"success","type":"bool"}],"name":"Finalized","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"},{"indexed":false,"name":"value","type":"uint256"},{"indexed":false,"name":"token","type":"address"}],"name":"Received","type":"event"}]</textarea>
+</div>
+<div>
+    <div>持有者1：</div>
+    <div>地址：
+        <input id="address_1" type='text' value="0x55358fc71e8863a36a444c11be8847cb36fa187f"/>
+        <input id="privateKey_1" type='text' value="fe91d4687e448b553cd14f977e4c9d4d3c4d32433336155739ed575fdd55a6b3"/>
+    </div>
+    <div>份数：
+        <input id="shares_1" type='text' value="20"/>
+        <span id="shares_holding_1"></span>
+    </div>
+    <div>余额：
+        <input id="balance_1" type='text'/>
+    </div>
+    <div>
+        <input type="button" value="发钱" onclick="mint('1',100000000)"/>
+        <input type="button" value="付认购款" onclick="payPurchase('1',1000)"/>
+        <input type="button" value="认购份额" onclick="purchase('1',20)"/>
+    </div>
+</div>
+<div>
+    <div>持有者2：</div>
+    <div>地址：
+        <input id="address_2" type='text' value="0xa9156113040975f19ce3fee209b2546f4e727da7"/>
+        <input id="privateKey_2" type='text' value="2aadfbc7dceeeb00b9054b2cefce40798f4392d61d8dbebd11681064d769a4ed"/>
+    </div>
+    <div>份数：
+        <input id="shares_2" type='text' value="30"/>
+        <span id="shares_holding_2"></span>
+    </div>
+    <div>余额：
+        <input id="balance_2" type='text'/>
+    </div>
+    <div>
+        <input type="button" value="发钱" onclick="mint('2',100000000)"/>
+        <input type="button" value="付认购款" onclick="payPurchase('2',1500)"/>
+        <input type="button" value="认购份额" onclick="purchase('2',30)"/>
+    </div>
+</div>
+<div>
+    <div>持有者3：</div>
+    <div>地址：
+        <input id="address_3" type='text' value="0x27b2dbea5b532d8e98038b72f67ceebe94f4cda6"/>
+        <input id="privateKey_3" type='text' value="f0f1f4a287589e25ba81d4b5fca2f1d2a8c304e48757ff548772c38ae06ac9a4"/>
+    </div>
+    <div>份数：
+        <input id="shares_3" type='text' value="50"/>
+        <span id="shares_holding_3"></span>
+    </div>
+    <div>余额：
+        <input id="balance_3" type='text'/>
+    </div>
+    <div>
+        <input type="button" value="发钱" onclick="mint('3',100000000)"/>
+        <input type="button" value="付认购款" onclick="payPurchase('1',1000)"/>
+        <input type="button" value="认购份额" onclick="purchase('3',40)"/>
+    </div>
+</div>
+<div>
+    <label for="rentalIncome">总租金收益：</label>
+    <input id="rentalIncome" type="text" value="10000"/>
+    <input type="button" value="分配租金收益" onclick="pay()"/>
+    <input type="button" value="总份额" onclick="getTotal()"/>
+    <input type="button" value="总股东数" onclick="getTotalHolders()"/>
+</div>
+<div>
+    <input type="button" value="转入认购份额" onclick="transferAsset()"/>
+    <input type="button" value="开始认购流程" onclick="startLottery()"/>
+    <input type="button" value="关闭认购" onclick="closeLottery()"/>
+    <input type="button" value="开奖" onclick="drawLottery()"/>
+    <input type="button" value="终止认购流程" onclick="finalizeLottery()"/>
+    <input type="button" value="QUERY" onclick="query()"/>
+    <div>
+        <label for="result">RESULT:</label>
+        <br/>
+        <textarea id="result" rows="20" cols="400"></textarea>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+           lo();
+        });
+
+        var host = "http://47.100.185.238:9090/";
+
+        function query() {
+            $("#result").val('');
+            $.ajax({
+                url: host + "query",
+                data: JSON.stringify(
+                    {
+                        params: {
+                            from: '0xfb896078fe4a7447278b38247a0547a8c61f720f'
+                        },
+                        contract: cnyAddress,
+                        eventName: "Transfer",
+                        abi: cnyAbi
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        function mint(i, value) {
+            $("#result").val('');
+            $.ajax({
+                url: host + "transaction",
+                data: JSON.stringify(
+                    {
+                        privateKey: $("#privateKey").val(),
+                        caller: $("#caller").val(),
+                        contract: cnyAddress,
+                        method: "mint",
+                        eventName: "Mint",
+                        abi: cnyAbi,
+                        params: {value: value}
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        function transferAsset() {
+            $("#result").val('');
+            $.ajax({
+                url: host + "transaction",
+                data: JSON.stringify(
+                    {
+                        privateKey: $("#privateKey").val(),
+                        caller: $("#caller").val(),
+                        contract: ireAddress,
+                        method: "transfer",
+                        eventName: "Transfer",
+                        abi: ireAbi,
+                        params: {
+                            to: lotteryAddress,
+                            value: 330000
+                        }
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        function startLottery() {
+            $("#result").val('');
+            $.ajax({
+                url: host + "transaction",
+                data: JSON.stringify(
+                    {
+                        privateKey: $("#privateKey").val(),
+                        caller: $("#caller").val(),
+                        contract: lotteryAddress,
+                        method: "start",
+                        eventName: "Started",
+                        abi: lotteryAbi
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        function closeLottery() {
+            $("#result").val('');
+            $.ajax({
+                url: host + "transaction",
+                data: JSON.stringify(
+                    {
+                        privateKey: $("#privateKey").val(),
+                        caller: $("#caller").val(),
+                        contract: lotteryAddress,
+                        method: "close",
+                        eventName: "Closed",
+                        abi: lotteryAbi
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        function finalizeLottery() {
+            $("#result").val('');
+            $.ajax({
+                url: host + "transaction",
+                data: JSON.stringify(
+                    {
+                        privateKey: $("#privateKey").val(),
+                        caller: $("#caller").val(),
+                        contract: lotteryAddress,
+                        method: "finalize",
+                        eventName: "Finalized",
+                        abi: lotteryAbi
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        function drawLottery() {
+            $("#result").val('');
+            $.ajax({
+                url: host + "transaction",
+                data: JSON.stringify(
+                    {
+                        privateKey: $("#privateKey").val(),
+                        caller: $("#caller").val(),
+                        contract: lotteryAddress,
+                        method: "draw",
+                        eventName: "Draw",
+                        abi: lotteryAbi
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        function payPurchase(i, value) {
+            $("#result").val('');
+            $.ajax({
+                url: host + "transaction",
+                data: JSON.stringify(
+                    {
+                        privateKey: $("#privateKey_" + i).val(),
+                        caller: $("#address_" + i).val(),
+                        contract: cnyAddress,
+                        method: "transfer",
+                        eventName: "Transfer",
+                        abi: cnyAbi,
+                        params: {to: lotteryAddress, amount: value}
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        function purchase(i, value) {
+            $("#result").val('');
+            $.ajax({
+                url: host + "transaction",
+                data: JSON.stringify(
+                    {
+                        privateKey: $("#privateKey_" + i).val(),
+                        caller: $("#address_" + i).val(),
+                        contract: lotteryAddress,
+                        method: "purchase",
+                        eventName: "Purchased",
+                        abi: lotteryAbi,
+                        params: {timeStamp: 138288328, amount: value}
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        function pay() {
+            $("#result").val('');
+            $.ajax({
+                url: host + "transaction",
+                data: JSON.stringify(
+                    {
+                        privateKey: $("#privateKey").val(),
+                        caller: $("#caller").val(),
+                        contract: $("#addressOfEquity").val(),
+                        method: "pay",
+                        eventName: "Success",
+                        abi: $("#abi").val(),
+                        params: {amount: parseInt($("#rentalIncome").val())}
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        function getTotal() {
+            $("#result").val('');
+            $.ajax({
+                url: host + "call",
+                data: JSON.stringify(
+                    {
+                        abi: $("#abi").val(),
+                        contract: $("#addressOfEquity").val(),
+                        method: "getTotalShares"
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        function getTotalHolders() {
+            $("#result").val('');
+            $.ajax({
+                url: host + "call",
+                data: JSON.stringify(
+                    {
+                        abi: $("#abi").val(),
+                        contract: $("#addressOfEquity").val(),
+                        method: "getShareHoldersCount"
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        function refreshShares(holder) {
+            $("#result").val('');
+            $.ajax({
+                url: host + "call",
+                data: JSON.stringify(
+                    {
+                        abi: $("#abi").val(),
+                        contract: $("#addressOfEquity").val(),
+                        method: "getShares",
+                        params: {account: $("#address_" + holder).val()}
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                    if (!r.hasError) {
+                        $("#shares_holding_" + holder).html(r.data);
+                    }
+                }
+            });
+        }
+
+        function refreshBalance(holder) {
+            $("#result").val('');
+            $.ajax({
+                url: host + "call",
+                data: JSON.stringify(
+                    {
+                        abi: $("#abiOfCny").val(),
+                        contract: $("#addressOfCny").val(),
+                        method: "getBalance",
+                        params: {account: $("#address_" + holder).val()}
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                    if (!r.hasError) {
+                        $("#balance_" + holder).val(r.data);
+                    }
+                }
+            });
+        }
+
+        function getTokenAddress(holder) {
+            $("#result").val('');
+            $.ajax({
+                url: host + "call",
+                data: JSON.stringify(
+                    {
+                        abi: $("#abi").val(),
+                        contract: $("#addressOfEquity").val(),
+                        method: "getTokenAddress",
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    $("#result").val(JSON.stringify(r));
+                }
+            });
+        }
+
+        var seed = 1;
+
+        function generateRandomNumbers() {
+            $("#result").val('');
+            $.ajax({
+                url: host + "call",
+                data: JSON.stringify(
+                    {
+                        abi: $("#abiOfRandom").val(),
+                        contract: $("#addressOfRandom").val(),
+                        method: "generate",
+                        params:
+                            {
+                                seed: seed,
+                                count: 7,
+                                min: 0,
+                                max: 6,
+                                distinct: 1
+                            }
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    if (!r.hasError) {
+                        $("#result").val(JSON.stringify(r));
+                        var flag = false;
+                        for (var i = 0; i < r.data.length; i++) {
+                            var d = r.data[i];
+                            if (d == 0) {
+                                flag = true;
+                            }
+                        }
+                        if (!flag) {
+                            seed++;
+                            generateRandomNumbers();
+                        }
+                        else {
+                            alert("aaaaaaaa");
+                        }
+                    }
+                }
+            });
+        }
+
+        function mapInfoRange() {
+            $("#result").val('');
+            $.ajax({
+                url: host + "call",
+                data: JSON.stringify(
+                    {
+                        abi: $("#abiOfRandom").val(),
+                        contract: $("#addressOfRandom").val(),
+                        method: "mapIntoRange",
+                        params:
+                            {
+                                value: 1 << 61,
+                                min: 0,
+                                max: 1024
+                            }
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    if (!r.hasError) {
+                        alert(r.data);
+                    }
+                }
+            });
+        }
+
+        function loop() {
+            $("#result").val('');
+            $.ajax({
+                url: "http://localhost:9090/" + "transaction",
+                data: JSON.stringify(
+                    {
+                        privateKey: 'bff3aa7dc0fd0907a9ff6381bbd933d3c5642adbc7af78a60752d99d66005d4e',
+                        caller: '0xd32aabb8dc1c3cbe37facf1fa6631d7e93fb7ae3',
+                        abi: '[{"constant":false,"inputs":[],"name":"Doloop","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"adr","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[],"name":"LoopEnd","type":"event"}]',
+                        contract: '0x9be80716a69ee6f0d9eab252bd40d186c8ab7b0a',
+                        method: "Doloop",
+                        eventName: "LoopEnd"
+                    }),
+                type: "POST",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (r) {
+                    if (!r.hasError) {
+                        alert(r.data);
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
