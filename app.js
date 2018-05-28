@@ -1,5 +1,6 @@
+'use strict';
 var express = require('express');
-var ipfsAPI = require('ipfs-api')
+var ipfsAPI = require('ipfs-api');
 var fs = require('fs');
 var Web3 = require('web3');
 var web3Admin = require('web3admin');
