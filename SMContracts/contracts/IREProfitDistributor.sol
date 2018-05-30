@@ -25,7 +25,7 @@ contract IREProfitDistributor is ERC721ProfitDistributor, ContractReceiver {
     }
     //分配租金根据持股数和合约资金账户余额进行租金分配
     //注：租金属于该合约的账户，充值需冲入该合约地址，分配租金是逐笔转账的过程
-    function pay(string taskId) onlyOperator() external {
+    function pay(uint taskId) onlyOperator() external {
         ERC20 cnyToken = getCny();
         ERC20 ireToken = getAsset();
         //uint balance = cnyToken.allowance(msg.sender, this);

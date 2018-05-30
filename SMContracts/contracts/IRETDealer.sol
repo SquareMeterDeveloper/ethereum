@@ -87,7 +87,7 @@ contract IRETDealer is ERC20Dealer, ContractReceiver {
             if (t != total) {
                 Start(msg.sender, 1);
             }
-            else if (asset.transferFrom(msg.sender, this, balance, "")) {
+            else if (asset.transferFrom(msg.sender, this, balance)) {
                 status = 0;
                 Start(msg.sender, 0);
             } else {

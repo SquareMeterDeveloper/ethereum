@@ -20,9 +20,9 @@ contract ERC20 is Owned {
     //总份额数
     function totalSupply() public constant returns (uint _totalSupply);
     //转账
-    function transfer(address to, uint value, string data) public returns (bool success);
+    function transfer(address to, uint value, uint data) public returns (bool success);
     //转账
-    function transferFrom(address from, address to, uint value, string data) public returns (bool success);
+    function transferFrom(address from, address to, uint value, uint data) public returns (bool success);
     //转账
     function transfer(address to, uint value) public returns (bool success);
     //转账
@@ -30,7 +30,7 @@ contract ERC20 is Owned {
     //转账
     function approve(address to, uint value) external returns (bool ok);
     //转账事件
-    event Transfer(address indexed from, address indexed to, string indexed data, uint value, uint code);
+    event Transfer(address indexed from, address indexed to, uint indexed data, uint value, uint code);
     //转账事件
     event Approve(address indexed from, address indexed to, uint value, uint code);
 }

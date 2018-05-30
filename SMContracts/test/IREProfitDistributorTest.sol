@@ -29,14 +29,14 @@ contract IREProfitDistributorTest is ContractReceiver {
             asset.transfer(address(i), 1);
         }
 
-        payer.pay("P1");
+        payer.pay(1);
         Assert.equal(cny.balanceOf(acc), 0, "余额不为0");
 
         cny.mint(1000000);
         cny.approve(payer, 110000);
         Assert.equal(cny.allowance(this, payer), 110000, "余额不为110000");
 
-        payer.pay("P2");
+        payer.pay(2);
         Assert.equal(cny.allowance(this, payer), 10000, "余额不为10000");
         Assert.equal(cny.balanceOf(acc), 2000, "余额不为2000");
         Assert.equal(cny.balanceOf(address(888)), 1, "余额不为1");

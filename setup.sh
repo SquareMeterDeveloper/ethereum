@@ -17,6 +17,7 @@ mkdir node
 cd node
 npm init
 npm install express
+npm install bluebird
 npm install web3@0.20.1
 npm install web3admin
 npm install keythereum

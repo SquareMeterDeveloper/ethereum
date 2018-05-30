@@ -61,7 +61,7 @@ contract ERC20Token is ERC20, SafeMath {
     //@dev 转账给指定地址的账户，余额不足或对方账户超限将执行失败，如果转入账户是合约地址，合约必须是ContractReceiver
     //@param to 转入的账户地址
     //@param value 转出数量
-    function transfer(address to, uint value, string data) public returns (bool success) {
+    function transfer(address to, uint value, uint data) public returns (bool success) {
         if (balanceOf(msg.sender) < value) {
             Transfer(msg.sender, to, data, 0, 1);
             return false;
@@ -75,14 +75,14 @@ contract ERC20Token is ERC20, SafeMath {
     }
 
     function transfer(address to, uint value) public returns (bool success) {
-        return transfer(to, value, "");
+        return transfer(to, value, 0);
     }
 
     function transferFrom(address from, address to, uint value) public returns (bool){
-        return transferFrom(from, to, value, "");
+        return transferFrom(from, to, value, 0);
     }
 
-    function transferTo(address from, address to, uint value, string data) private returns (bool){
+    function transferTo(address from, address to, uint value, uint data) private returns (bool){
         uint balanceFrom = balanceOf(from) - value;
         uint balanceTo;
         bool flagTo;
@@ -144,7 +144,7 @@ contract ERC20Token is ERC20, SafeMath {
         }
     }
 
-    function transferFrom(address from, address to, uint value, string data) public returns (bool){
+    function transferFrom(address from, address to, uint value, uint data) public returns (bool){
         if (balanceOf(from) < value) {
             Transfer(from, to, data, 0, 1);
             return false;
