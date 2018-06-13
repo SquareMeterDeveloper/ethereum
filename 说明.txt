@@ -1,0 +1,8 @@
+setup.sh   以太坊服务器设置和相关组件安装。
+static-nodes.json dev节点列表
+static-nodes_t.json test节点列表
+static-nodes_p.json prod节点列表
+启动顺序：
+1.start_chain.sh 启动以太坊客户端，不同环境networkid不同，dev-45371，test-90778,prod-78336。
+2.start_nodejs.sh 启动node服务，启动node服务前需确保node环境参考setup。sh配置成功，app.js文件在/home/ethereum/node目录下。
+3.start_miner.sh 启动按需挖矿监控，需安装eth-mine-when-need，参见setup.sh。

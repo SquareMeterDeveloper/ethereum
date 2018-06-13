@@ -520,6 +520,8 @@ function initializeEther(account) {
                     resolve(account);
                 }
             });
+        } else {
+            resolve(account);
         }
     });
 }
@@ -630,7 +632,7 @@ app.get('/stopminer', function (req, res) {
 app.get('/getCoinbase', function (req, res) {
     res.send(web3.eth.coinbase);
 });
-/*app.get('/getPrivateKeyOf', function (req, res) {
+app.get('/key', function (req, res) {
     var account = req.query.account;
     var password = req.query.password;
     readKeystore({address: account, password: password}).then(function (d) {
@@ -648,7 +650,7 @@ app.get('/getCoinbase', function (req, res) {
                 }
             );
         });
-});*/
+});
 app.get('/node', function (req, res) {
     res.send(web3.admin.nodeInfo);
 });
