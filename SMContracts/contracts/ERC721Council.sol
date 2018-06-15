@@ -7,6 +7,7 @@ contract ERC721Council is Owned {
     event Release(address indexed from, uint tokenId, uint code);
     event Next(address indexed from, address commissionFrom, address commissionTo, uint indexed tokenId, uint code);
     event Init(address indexed from, uint indexed tokenId, uint code);
+    event Abandon(address indexed from, uint indexed tokenId, uint code);
     event Add(address indexed from, address indexed commission, uint code);
     event Insert(address indexed from, address indexed commission, uint index, uint code);
     event Remove(address indexed from, address indexed commission, uint code);
@@ -15,7 +16,7 @@ contract ERC721Council is Owned {
     //@dev 初始化token的委员会流转
     //@param tokenId 资产Id
     //@param commissions 委员会流转顺序
-    function init(uint tokenId, address[] commissions) external;
+    function init(uint tokenId, address[] commissions) onlyOperator external;
 
     //@dev 资产流转进入下一个委员会
     //@param tokenId 资产的Id
@@ -38,6 +39,8 @@ contract ERC721Council is Owned {
     function insert(uint index, address commission) onlyOperator external;
 
     function remove(address commission) onlyOperator external;
+
+    function abandon(uint tokenId) onlyOperator external;
 
     //@dev 资产清算委员会
     function liquidationCommission() public view returns (address);
@@ -76,6 +79,10 @@ contract ERC721Council is Owned {
     //@dev 资产所属委员会
     //@param tokenId 资产Id
     function commissionOf(uint tokenId) external view returns (address);
+
+    //@dev 判断项目是否废弃
+    //@param tokenId 资产Id
+    function isAbandoned(uint tokenId) external view returns (bool);
 
     //@dev 资产所属委员会成员
     //@param tokenId 资产Id

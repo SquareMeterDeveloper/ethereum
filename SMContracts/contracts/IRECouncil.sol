@@ -48,6 +48,7 @@ contract IRECouncil is ERC721Council {
     struct CurrentState {
         State state;
         address member;
+        bool abandonFlag;
     }
 
     NamingController nc;
@@ -65,7 +66,7 @@ contract IRECouncil is ERC721Council {
         return ERC721(nc.getContract("ERC721", 0));
     }
 
-    function init(uint tokenId, address[] states) external {
+    function init(uint tokenId, address[] states) onlyOperator external {
         ERC721 asset = getERC721();
         address owner = asset.ownerOf(tokenId);
         if (owner == address(this)) {
@@ -93,6 +94,17 @@ contract IRECouncil is ERC721Council {
             }
         }
         Init(msg.sender, tokenId, 0);
+    }
+
+    function abandon(uint tokenId) onlyOperator external {
+        ERC721 asset = getERC721();
+        address owner = asset.ownerOf(tokenId);
+        if (owner == address(this)) {
+            tokenToState[tokenId].abandonFlag = true;
+            Abandon(msg.sender, tokenId, 0);
+        } else {
+            Abandon(msg.sender, tokenId, 1);
+        }
     }
 
     function update(uint key, address adr, uint tokenId) private {
@@ -140,34 +152,40 @@ contract IRECouncil is ERC721Council {
         address owner = asset.ownerOf(tokenId);
         if (owner == address(this)) {
             address liquidationCmt = liquidationCommission();
-            address from = tokenToState[tokenId].state.from;
-            address to = tokenToState[tokenId].state.to;
-            uint index = tokenToState[tokenId].state.index;
-            if (from != address(0)) {
-                if (from != liquidationCmt) {
-                    if (index == tokenToStates[tokenId].length - 1) {
-                        if (project.commissionChanging(from, to, msg.sender)) {
-                            project.commissionChanged(from, to, msg.sender);
+            if (tokenToState[tokenId].abandonFlag) {
+                //如果是废弃的项目，不允许触发next
+                Next(msg.sender, address(0), address(0), tokenId, 2);
+            }
+            else {
+                address from = tokenToState[tokenId].state.from;
+                address to = tokenToState[tokenId].state.to;
+                uint index = tokenToState[tokenId].state.index;
+                if (from != address(0)) {
+                    if (from != liquidationCmt) {
+                        if (index == tokenToStates[tokenId].length - 1) {
+                            if (project.commissionChanging(from, to, msg.sender)) {
+                                project.commissionChanged(from, to, msg.sender);
+                            }
+                        } else {
+                            State storage ns = tokenToStates[tokenId][index + 1];
+                            if (project.commissionChanging(from, to, msg.sender)) {
+                                tokenToState[tokenId].state = ns;
+                                transit(from, to, ns.to, tokenId);
+                                project.commissionChanged(from, to, msg.sender);
+                            }
                         }
-                    } else {
-                        State storage ns = tokenToStates[tokenId][index + 1];
-                        if (project.commissionChanging(from, to, msg.sender)) {
-                            tokenToState[tokenId].state = ns;
-                            transit(from, to, ns.to, tokenId);
-                            project.commissionChanged(from, to, msg.sender);
-                        }
+                        Next(msg.sender, from, to, tokenId, 0);
                     }
-                    Next(msg.sender, from, to, tokenId, 0);
+                } else {
+                    tokens.push(tokenId);
+                    State storage o = tokenToStates[tokenId][0];
+                    if (project.commissionChanging(address(0), o.from, msg.sender)) {
+                        tokenToState[tokenId].state = o;
+                        transit(address(0), o.from, o.to, tokenId);
+                        project.commissionChanged(address(0), o.from, msg.sender);
+                    }
+                    Next(msg.sender, address(0), o.from, tokenId, 0);
                 }
-            } else {
-                tokens.push(tokenId);
-                State storage o = tokenToStates[tokenId][0];
-                if (project.commissionChanging(address(0), o.from, msg.sender)) {
-                    tokenToState[tokenId].state = o;
-                    transit(address(0), o.from, o.to, tokenId);
-                    project.commissionChanged(address(0), o.from, msg.sender);
-                }
-                Next(msg.sender, address(0), o.from, tokenId, 0);
             }
         }
         else {
@@ -199,18 +217,23 @@ contract IRECouncil is ERC721Council {
         //判断token当前拥有者
         //如果拥有者不是该委员会，那么或者是下属机构已认领或者是流程已进入其他委员会
         if (owner == address(this)) {
-            address comm = tokenToState[tokenId].state.to;
-            address m = tokenToState[tokenId].member;
-            if (m == address(0)) {
-                if (isMemberOf(comm, msg.sender)) {
-                    tokenToState[tokenId].member = msg.sender;
-                    update(2, msg.sender, tokenId);
-                    Take(msg.sender, tokenId, 0);
+            if (tokenToState[tokenId].abandonFlag) {
+                Take(msg.sender, tokenId, 3);
+            }
+            else {
+                address comm = tokenToState[tokenId].state.to;
+                address m = tokenToState[tokenId].member;
+                if (m == address(0)) {
+                    if (isMemberOf(comm, msg.sender)) {
+                        tokenToState[tokenId].member = msg.sender;
+                        update(2, msg.sender, tokenId);
+                        Take(msg.sender, tokenId, 0);
+                    } else {
+                        Take(msg.sender, tokenId, 1);
+                    }
                 } else {
-                    Take(msg.sender, tokenId, 1);
+                    Take(msg.sender, tokenId, 2);
                 }
-            } else {
-                Take(msg.sender, tokenId, 2);
             }
         } else {
             Take(msg.sender, tokenId, 3);
@@ -381,6 +404,10 @@ contract IRECouncil is ERC721Council {
 
     function commissionOf(uint tokenId) external view returns (address) {
         return tokenToState[tokenId].state.from;
+    }
+
+    function isAbandoned(uint tokenId) external view returns (bool){
+        return tokenToState[tokenId].abandonFlag;
     }
 
     function nextCommissionOf(uint tokenId) external view returns (address) {

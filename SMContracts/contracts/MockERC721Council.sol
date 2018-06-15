@@ -9,7 +9,9 @@ contract MockERC721Council is ERC721Council {
     //@dev 初始化token的委员会流转
     //@param tokenId 资产Id
     //@param commissions 委员会流转顺序
-    function init(uint tokenId, address[] commissions) external {}
+    function init(uint tokenId, address[] commissions) onlyOperator external {}
+
+    function abandon(uint tokenId) onlyOperator external {}
 
     //@dev 资产流转进入下一个委员会
     //@param tokenId 资产的Id
