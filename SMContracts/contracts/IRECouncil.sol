@@ -67,6 +67,10 @@ contract IRECouncil is ERC721Council {
         nc = _nc;
     }
 
+    function naming() public view returns (address){
+        return nc;
+    }
+
     function getERC721() private returns (ERC721){
         return ERC721(nc.getContract("ERC721", 0));
     }
@@ -82,24 +86,23 @@ contract IRECouncil is ERC721Council {
                 }
                 count++;
             }
-            address[] memory states = new address[](count);
-            for (uint i = 0; i < count; i++) {
+            uint max = count;
+            while (max > 0) {
+                uint i = max - 1;
                 uint d = commissions / (10 ** i);
                 uint idx = d % 10;
-                states[count - 1 - i] = commission.keys[idx];
-            }
-            for (uint j = 0; j < states.length; j++) {
-                if (j == states.length - 1) {
-                    tokenToStates[tokenId].push(State(states[j], states[j], j));
-                } else {
-                    tokenToStates[tokenId].push(State(states[j], states[j + 1], j));
+                address state = commission.keys[idx];
+                uint flag = count - 1 - i;
+                tokenToStates[tokenId].push(State(state, state, flag));
+                if (flag > 0) {
+                    tokenToStates[tokenId][flag - 1].to = state;
                 }
+                max--;
             }
             Init(msg.sender, tokenId, 0);
         } else {
             Init(msg.sender, tokenId, 1);
         }
-
     }
 
     function abandon(uint tokenId) onlyOperator external {

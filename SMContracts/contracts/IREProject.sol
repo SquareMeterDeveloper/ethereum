@@ -35,6 +35,10 @@ contract IREProject is ERC721Project {
         id = _tokenId;
     }
 
+    function naming() public view returns (address){
+        return nc;
+    }
+
     function tokenId() external view returns (uint){
         return id;
     }

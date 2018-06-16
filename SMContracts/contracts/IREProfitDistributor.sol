@@ -14,7 +14,11 @@ contract IREProfitDistributor is ERC721ProfitDistributor, ContractReceiver {
         tokenId = _tokenId;
     }
 
-    function calculate(ERC20 cnyToken, ERC20 ireToken) private returns (uint, uint, uint){
+    function naming() public view returns (address){
+        return nc;
+    }
+
+    function calculate(ERC20 cnyToken, ERC20 ireToken) private view returns (uint, uint, uint){
         uint balance = cnyToken.allowance(msg.sender, this);
         //总份数=总平米数*分割倍数
         uint totalShares = ireToken.totalSupply();
@@ -23,6 +27,7 @@ contract IREProfitDistributor is ERC721ProfitDistributor, ContractReceiver {
         uint total = amount * totalShares;
         return (total, balance - total, amount);
     }
+
     //分配租金根据持股数和合约资金账户余额进行租金分配
     //注：租金属于该合约的账户，充值需冲入该合约地址，分配租金是逐笔转账的过程
     function pay(uint taskId) onlyOperator() external {

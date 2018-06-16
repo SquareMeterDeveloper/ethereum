@@ -68,6 +68,10 @@ contract IRETDealer is ERC20Dealer, ContractReceiver {
         percent = _percent;
     }
 
+    function naming() public view returns (address){
+        return nc;
+    }
+
     function getAsset() private returns (ERC20){
         return ERC20(nc.getContract("AssetToken", tokenId));
     }
