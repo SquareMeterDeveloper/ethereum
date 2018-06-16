@@ -173,7 +173,7 @@ function createContractRawTransaction(params) {
     });
 }
 
-function sendRawTransaction(tx) {
+function sendDeploymentTransaction(tx) {
     return new Promise(function (resolve, reject) {
         try {
             web3.eth.sendRawTransaction(tx.stx, function (e, h) {
@@ -236,7 +236,7 @@ app.post('/deployContract', function (req, res) {
         method: false,
         eventName: false
     }).then(createContractRawTransaction)
-        .then(sendRawTransaction)
+        .then(sendDeploymentTransaction)
         .then(waitForTransactionReceipt)
         .then(returnEther)
         .then(function (tx) {
@@ -300,6 +300,13 @@ function watchTransactionEvent(tx) {
                     resolve(tx);
                 }
             });
+            web3.eth.sendRawTransaction(tx.stx, function (e, h) {
+                if (e) {
+                    reject(e);
+                } else {
+                    tx.hash = h;
+                }
+            })
         } catch (e) {
             reject(e);
         }
@@ -311,12 +318,12 @@ function returnEther(tx) {
         try {
             var caller = tx.input.caller;
             var balance = web3.eth.getBalance(caller);
-            var miner = web3.eth.accounts[0];
-            if (caller !== miner) {
+            var amount = tx.input.balance - balance;
+            if (amount > 0) {
                 web3.eth.sendTransaction({
-                    from: miner,
+                    from: web3.eth.coinbase,
                     to: caller,
-                    value: tx.input.balance - balance,
+                    value: Math.ceil(amount),
                     gasLimit: 21000,
                     gasPrice: 10000
                 }, function (e, r) {
@@ -347,7 +354,6 @@ app.post('/transaction', function (req, res) {
         method: true,
         eventName: true
     }).then(createRawTransaction)
-        .then(sendRawTransaction)
         .then(watchTransactionEvent)
         .then(returnEther)
         .then(function (tx) {
@@ -508,7 +514,7 @@ function initializeEther(account) {
     return new Promise(function (resolve, reject) {
         if (web3.eth.accounts.length > 0) {
             web3.eth.sendTransaction({
-                from: web3.eth.accounts[0],
+                from: web3.eth.coinbase,
                 to: account.address,
                 value: web3.toWei(0.01, 'ether'),
                 gasLimit: 21000,
@@ -575,7 +581,7 @@ app.get('/transfer', function (req, res) {
         var account = req.query.account;
         var value = req.query.value;
         web3.eth.sendTransaction({
-            from: web3.eth.accounts[0],
+            from: web3.eth.coinbase,
             to: account,
             value: web3.toWei(value, 'ether'),
             gasLimit: 21000,
@@ -596,7 +602,7 @@ app.get('/transferBack', function (req, res) {
                 web3.personal.unlockAccount(account, "123456", 0);
                 web3.eth.sendTransaction({
                     from: account,
-                    to: web3.eth.accounts[0],
+                    to: web3.eth.coinbase,
                     value: web3.eth.getBalance(account),
                     gasLimit: 21000,
                     gasPrice: 1000
@@ -693,6 +699,6 @@ var server = app.listen(9090, function () {
     var host = server.address().address;
     var port = server.address().port;
     if (web3.eth.accounts.length > 0)
-        web3.personal.unlockAccount(web3.eth.accounts[0], "123456", 0);
+        web3.personal.unlockAccount(web3.eth.coinbase, "123456", 0);
     console.log('Example app listerning at http://%s:%s', host, port);
 });
