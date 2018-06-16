@@ -1,0 +1,61 @@
+<div class="container" style="padding-top: 50px;">
+    <h1 style="text-align:center;">货币</h1>
+    货币代号：{{symbol}} &nbsp;&nbsp;
+    总余额：{{totalSupply}}&nbsp;&nbsp;
+    总用户：{{count}}
+    <div style="padding-top: 50px;"></div>
+    <table class="table table-striped" cellpadding="0" cellspacing="0"
+           style="padding:0px;float:left;margin:0px;width:100%">
+        <tbody>
+        <tr>
+            <th>账号 #</th>
+            <th>余额 #</th>
+        </tr>
+        <tr data-ng-repeat="i in holders">
+            <td>{{i.holder}}</td>
+            <td>{{i.balance}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div style="padding:20px 0">
+        <input type="text" placeholder="输入账号查询转入转出记录" name="requestType" required ng-model="account" class="form-control"
+               style="width:70%;display:inline-block">
+        <button type="button" class="btn btn-success" ng-click="query()">查询</button>
+    </div>
+    <h4 style="text-align:center;">转出</h4>
+    <table class="table table-striped" cellpadding="0" cellspacing="0"
+           style="padding:0px;float:left;margin:0px;width:100%">
+        <tbody>
+        <tr>
+            <th>转出账号 #</th>
+            <th>转入账号 #</th>
+            <th>数量 #</th>
+            <th>备注 #</th>
+        </tr>
+        <tr data-ng-repeat="i in logsFrom">
+            <td>{{i.from}}</td>
+            <td>{{i.to}}</td>
+            <td>{{i.value}}</td>
+            <td>{{i.data}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <h4 style="text-align:center;">转入</h4>
+    <table class="table table-striped" cellpadding="0" cellspacing="0"
+           style="padding:0px;float:left;margin:0px;width:100%">
+        <tbody>
+        <tr>
+            <th>转出账号 #</th>
+            <th>转入账号 #</th>
+            <th>数量 #</th>
+            <th>备注 #</th>
+        </tr>
+        <tr data-ng-repeat="i in logsTo">
+            <td>{{i.from}}</td>
+            <td>{{i.to}}</td>
+            <td>{{i.value}}</td>
+            <td>{{i.data}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

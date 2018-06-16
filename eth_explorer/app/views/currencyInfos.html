@@ -1,0 +1,25 @@
+<div class="container" style="padding-top: 50px;">
+
+    <h1 style="text-align:center;">货币</h1>
+
+
+    <table class="table table-striped" cellpadding="0" cellspacing="0"
+           style="padding:0px;float:left;margin:0px;width:100%">
+        <tbody>
+        <tr>
+            <th>合约地址 #</th>
+            <th>货币代号 #</th>
+            <th>总余额 #</th>
+            <th>持有人数量</th>
+        </tr>
+        <tr data-ng-repeat="i in currencies">
+            <td><a href="/#/currency/{{i.address}}">{{i.address}}</a></td>
+            <td>{{i.symbol}}</td>
+            <td>{{i.totalSupply}}</td>
+            <td>{{i.count}}</td>
+        </tr>
+
+        </tbody>
+    </table>
+
+</div>
