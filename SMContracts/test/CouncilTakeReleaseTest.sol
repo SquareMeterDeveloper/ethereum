@@ -27,11 +27,7 @@ contract CouncilTakeReleaseTest {
         council.add(this);
         council.addMember(this);
 
-        address[] memory arr = new address[](2);
-        arr[0] = address(3);
-        arr[1] = address(this);
-
-        council.init(tester.tokenId(), arr);
+        council.init(tester.tokenId(),25);
         council.next(tester.tokenId());
         Assert.equal(council.commissionOf(tester.tokenId()), address(3), "当前委员会不正确");
         Assert.equal(council.tokenCountOf(address(3)), 1, "当前委员会Token数不正确");
@@ -53,8 +49,8 @@ contract CouncilTakeReleaseTest {
         council.add(address(888));
         council.liquidate(tester.tokenId());
         Assert.equal(tester.isLiquidated(), true, "已清算状态不正确");
-        Assert.equal(council.commissionOf(tester.tokenId()), address(888), "当前委员会不正确");
-        Assert.equal(council.tokenCountOf(address(888)), 1, "当前委员会Token数不正确");
-        Assert.equal(council.tokenCountOfNextCommission(address(888)), 1, "下一委员会Token数不正确");
+        Assert.equal(council.commissionOf(tester.tokenId()), address(1), "当前委员会不正确");
+        Assert.equal(council.tokenCountOf(address(1)), 1, "当前委员会Token数不正确");
+        Assert.equal(council.tokenCountOfNextCommission(address(1)), 1, "下一委员会Token数不正确");
     }
 }

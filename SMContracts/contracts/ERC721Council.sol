@@ -16,7 +16,7 @@ contract ERC721Council is Owned {
     //@dev 初始化token的委员会流转
     //@param tokenId 资产Id
     //@param commissions 委员会流转顺序
-    function init(uint tokenId, address[] commissions) onlyOperator external;
+    function init(uint tokenId, uint commissions) onlyOperator external;
 
     //@dev 资产流转进入下一个委员会
     //@param tokenId 资产的Id

@@ -5,12 +5,13 @@ import '../contracts/CurrencyToken.sol';
 import '../contracts/IRE721.sol';
 
 ///@title 平方米区块链去中心化程序主入口
+//已废弃
 contract SMTDApplication is Owned {
     NamingController controller;
     ERC20 cny;
     IRE721 token721;
 
-    function SMTDApplication(){
+    function SMTDApplication() public {
         controller = new NamingRepository();
         cny = new CurrencyToken("CNYT", 6, 0);
         token721 = new IRE721();

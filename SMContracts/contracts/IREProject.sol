@@ -1,12 +1,9 @@
 pragma solidity ^0.4.0;
 
 import '../contracts/NamingController.sol';
-import '../contracts/IRE721.sol';
 import '../contracts/ERC721Project.sol';
-import '../contracts/IREToken.sol';
-import '../contracts/IREProfitDistributor.sol';
 import '../contracts/ERC721Council.sol';
-import '../contracts/IRETDealer.sol';
+import '../contracts/ERC20Dealer.sol';
 
 contract IREProject is ERC721Project {
     //tokenId

@@ -7,7 +7,7 @@ contract NamingController is Owned {
 
     function getContract(string name, uint key) external returns (address);
 
-    function getContract(string name) external returns (address[]);
+    function getContracts(string name) external returns (address[]);
 
     function setContract(string name, uint key, Owned adr) external;
 }

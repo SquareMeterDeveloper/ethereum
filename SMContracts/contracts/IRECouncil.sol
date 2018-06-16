@@ -51,6 +51,11 @@ contract IRECouncil is ERC721Council {
         bool abandonFlag;
     }
 
+    struct TokenTemp {
+        bytes tempNum;
+        address[] states;
+    }
+
     NamingController nc;
     mapping(uint => State[]) tokenToStates;
     mapping(uint => CurrentState) tokenToState;
@@ -66,34 +71,35 @@ contract IRECouncil is ERC721Council {
         return ERC721(nc.getContract("ERC721", 0));
     }
 
-    function init(uint tokenId, address[] states) onlyOperator external {
+    function init(uint tokenId, uint commissions) onlyOperator external {
         ERC721 asset = getERC721();
         address owner = asset.ownerOf(tokenId);
         if (owner == address(this)) {
-            if (states.length == 0) {
-                for (uint i = 0; i < commission.keys.length; i++) {
-                    if (i == commission.keys.length - 1) {
-                        tokenToStates[tokenId].push(State(commission.keys[i], commission.keys[i], i));
-                    } else {
-                        tokenToStates[tokenId].push(State(commission.keys[i], commission.keys[i + 1], i));
-                    }
+            uint count = 1;
+            while (count < 10) {
+                if (commissions / (10 ** count) == 0) {
+                    break;
+                }
+                count++;
+            }
+            address[] memory states = new address[](count);
+            for (uint i = 0; i < count; i++) {
+                uint d = commissions / (10 ** i);
+                uint idx = d % 10;
+                states[count - 1 - i] = commission.keys[idx];
+            }
+            for (uint j = 0; j < states.length; j++) {
+                if (j == states.length - 1) {
+                    tokenToStates[tokenId].push(State(states[j], states[j], j));
+                } else {
+                    tokenToStates[tokenId].push(State(states[j], states[j + 1], j));
                 }
             }
-            else {
-                for (uint j = 0; j < states.length; j++) {
-                    if (!commission.map[states[j]].flag) {
-                        revert();
-                    } else {
-                        if (j == states.length - 1) {
-                            tokenToStates[tokenId].push(State(states[j], states[j], j));
-                        } else {
-                            tokenToStates[tokenId].push(State(states[j], states[j + 1], j));
-                        }
-                    }
-                }
-            }
+            Init(msg.sender, tokenId, 0);
+        } else {
+            Init(msg.sender, tokenId, 1);
         }
-        Init(msg.sender, tokenId, 0);
+
     }
 
     function abandon(uint tokenId) onlyOperator external {
@@ -368,7 +374,7 @@ contract IRECouncil is ERC721Council {
     }
 
     function liquidationCommission() public view returns (address){
-        return commission.keys[commission.keys.length - 1];
+        return commission.keys[0];
     }
 
     function commissions() public view returns (address[]){
@@ -389,7 +395,7 @@ contract IRECouncil is ERC721Council {
     }
 
     //@dev 委员会
-    function commissionAtOf(uint index, uint tokenId) external view returns (address){
+    function commissionAtOf(uint tokenId, uint index) external view returns (address){
         return tokenToStates[tokenId][index].from;
     }
 

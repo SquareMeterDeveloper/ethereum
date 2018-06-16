@@ -18,14 +18,14 @@ contract CouncilNextTest {
         repository.setContract("ERC721Project", tester.tokenId(), tester);
         asset.create(tester.tokenId());
         asset.transfer(council, tester.tokenId());
+        council.add(address(0));
         council.add(address(1));
         council.add(address(2));
         council.add(address(3));
         council.add(address(4));
         council.add(address(5));
 
-        address[] memory arr = new address[](0);
-        council.init(tester.tokenId(), arr);
+        council.init(tester.tokenId(), 12345);
 
         council.next(tester.tokenId());
         Assert.equal(council.commissionOf(tester.tokenId()), address(1), "当前委员会不正确");

@@ -9,7 +9,7 @@ contract MockERC721Council is ERC721Council {
     //@dev 初始化token的委员会流转
     //@param tokenId 资产Id
     //@param commissions 委员会流转顺序
-    function init(uint tokenId, address[] commissions) onlyOperator external {}
+    function init(uint tokenId, uint commissions) onlyOperator external {}
 
     function abandon(uint tokenId) onlyOperator external {}
 
@@ -75,6 +75,8 @@ contract MockERC721Council is ERC721Council {
     //@dev 资产所属委员会成员
     //@param tokenId 资产Id
     function memberOf(uint tokenId) external view returns (address){}
+
+    function isAbandoned(uint tokenId) external view returns (bool){}
 
     //@dev 委员会所管理资产
     //@param committee 委员会

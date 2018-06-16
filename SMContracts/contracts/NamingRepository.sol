@@ -1,10 +1,6 @@
 pragma solidity ^0.4.0;
 
 import '../contracts/Owned.sol';
-import '../contracts/IRECouncil.sol';
-import '../contracts/IRETDealer.sol';
-import '../contracts/ERC20.sol';
-import '../contracts/ERC721.sol';
 import '../contracts/NamingController.sol';
 
 contract NamingRepository is NamingController {
@@ -25,7 +21,7 @@ contract NamingRepository is NamingController {
         return namings[name].map[key].adr;
     }
 
-    function getContract(string name) external returns (address[]){
+    function getContracts(string name) external returns (address[]){
         uint len = namings[name].keys.length;
         address[] memory contracts = new address[](len);
         for (uint i = 0; i < namings[name].keys.length; i++) {
