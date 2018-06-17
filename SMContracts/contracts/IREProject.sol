@@ -46,20 +46,28 @@ contract IREProject is ERC721Project {
     function commissionChanging(address from, address to, address sender) external returns (bool) {
         ERC721Council c = ERC721Council(nc.getContract("ERC721Council", 0));
         if (address(c) == msg.sender) {
-            if (c.isMemberOf(to, sender)) {
-                uint count = c.commissionCountOf(id);
-                address comm = c.commissionAtOf(count - 1, id);
-                if (to == comm) {
-                    address t = nc.getContract("AssetToken", id);
-                    address d = nc.getContract("AssetDealer", id);
-                    if (t == address(0) || d == address(0))
+            if (c.isMemberOf(to, sender) && c.memberOf(id) == sender) {
+                if (from == address(0)) {
+                    if (to == c.commissionAtOf(id, 0)) {
+                        return true;
+                    }
+                    else {
                         return false;
-                    ERC20Dealer dealer = ERC20Dealer(d);
-                    return dealer.isClosed() && !dealer.isFailed();
+                    }
                 }
-                if (from == comm) {
-                    address p = nc.getContract("ProfitDistributor", id);
-                    return p != address(0);
+                else if (from != to) {
+                    uint count = c.commissionCountOf(id);
+                    address comm = c.commissionAtOf(id, count - 1);
+                    if (to == comm) {
+                        address t = nc.getContract("AssetToken", id);
+                        address d = nc.getContract("AssetDealer", id);
+                        if (t == address(0) || d == address(0))
+                            return false;
+                        ERC20Dealer dealer = ERC20Dealer(d);
+                        return dealer.isClosed() && !dealer.isFailed();
+                    } else {
+                        return true;
+                    }
                 }
             }
         }

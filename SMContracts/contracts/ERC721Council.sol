@@ -45,6 +45,9 @@ contract ERC721Council is Owned {
     //@dev 资产清算委员会
     function liquidationCommission() public view returns (address);
 
+    //@dev 获取所有Token
+    function getTokens() public view returns (uint[]);
+
     //@dev 所有委员会
     function commissions() public view returns (address[]);
 

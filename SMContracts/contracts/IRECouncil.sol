@@ -170,21 +170,25 @@ contract IRECouncil is ERC721Council {
                 address to = tokenToState[tokenId].state.to;
                 uint index = tokenToState[tokenId].state.index;
                 if (from != address(0)) {
-                    if (from != liquidationCmt) {
-                        if (index == tokenToStates[tokenId].length - 1) {
-                            if (project.commissionChanging(from, to, msg.sender)) {
-                                project.commissionChanged(from, to, msg.sender);
-                            }
+                    if (index == tokenToStates[tokenId].length - 1) {
+                        if (project.commissionChanging(from, to, msg.sender)) {
+                            project.commissionChanged(from, to, msg.sender);
+                            Next(msg.sender, from, to, tokenId, 0);
                         } else {
-                            State storage ns = tokenToStates[tokenId][index + 1];
-                            if (project.commissionChanging(from, to, msg.sender)) {
-                                tokenToState[tokenId].state = ns;
-                                transit(from, to, ns.to, tokenId);
-                                project.commissionChanged(from, to, msg.sender);
-                            }
+                            Next(msg.sender, from, to, tokenId, 4);
                         }
-                        Next(msg.sender, from, to, tokenId, 0);
+                    } else {
+                        State storage ns = tokenToStates[tokenId][index + 1];
+                        if (project.commissionChanging(from, to, msg.sender)) {
+                            tokenToState[tokenId].state = ns;
+                            transit(from, to, ns.to, tokenId);
+                            project.commissionChanged(from, to, msg.sender);
+                            Next(msg.sender, from, to, tokenId, 0);
+                        } else {
+                            Next(msg.sender, from, to, tokenId, 5);
+                        }
                     }
+
                 } else {
                     tokens.push(tokenId);
                     State storage o = tokenToStates[tokenId][0];
@@ -192,8 +196,11 @@ contract IRECouncil is ERC721Council {
                         tokenToState[tokenId].state = o;
                         transit(address(0), o.from, o.to, tokenId);
                         project.commissionChanged(address(0), o.from, msg.sender);
+                        Next(msg.sender, address(0), o.from, tokenId, 0);
                     }
-                    Next(msg.sender, address(0), o.from, tokenId, 0);
+                    else {
+                        Next(msg.sender, address(0), o.from, tokenId, 6);
+                    }
                 }
             }
         }
@@ -231,6 +238,8 @@ contract IRECouncil is ERC721Council {
             }
             else {
                 address comm = tokenToState[tokenId].state.to;
+                if (comm == address(0))
+                    comm = tokenToStates[tokenId][0].from;
                 address m = tokenToState[tokenId].member;
                 if (m == address(0)) {
                     if (isMemberOf(comm, msg.sender)) {
@@ -378,6 +387,10 @@ contract IRECouncil is ERC721Council {
 
     function liquidationCommission() public view returns (address){
         return commission.keys[0];
+    }
+
+    function getTokens() public view returns (uint[]){
+        return tokens;
     }
 
     function commissions() public view returns (address[]){
