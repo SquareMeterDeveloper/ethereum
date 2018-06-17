@@ -5,7 +5,7 @@ import '../contracts/ERC721ProfitDistributor.sol';
 import '../contracts/ContractReceiver.sol';
 import "../contracts/NamingController.sol";
 
-contract IREProfitDistributor is ERC721ProfitDistributor, ContractReceiver {
+contract IREProfitDistributor is ERC721ProfitDistributor {
     NamingController nc;
     uint tokenId;
 
@@ -18,8 +18,12 @@ contract IREProfitDistributor is ERC721ProfitDistributor, ContractReceiver {
         return nc;
     }
 
-    function calculate(ERC20 cnyToken, ERC20 ireToken) private view returns (uint, uint, uint){
-        uint balance = cnyToken.allowance(msg.sender, this);
+    function getTokenId() public view returns (uint){
+        return tokenId;
+    }
+
+    function calculate(ERC20 cnyToken, ERC20 ireToken, address payer) private view returns (uint, uint, uint){
+        uint balance = cnyToken.allowance(payer, this);
         //总份数=总平米数*分割倍数
         uint totalShares = ireToken.totalSupply();
         //计算每份需分配租金数，余数部分不分配
@@ -33,11 +37,10 @@ contract IREProfitDistributor is ERC721ProfitDistributor, ContractReceiver {
     function pay(uint taskId) onlyOperator() external {
         ERC20 cnyToken = getCny();
         ERC20 ireToken = getAsset();
-        //uint balance = cnyToken.allowance(msg.sender, this);
         uint total;
         uint residual;
         uint amt;
-        (total, residual, amt) = calculate(cnyToken, ireToken);
+        (total, residual, amt) = calculate(cnyToken, ireToken, msg.sender);
         if (amt > 0) {
             uint holders = ireToken.holdersCount();
             for (uint i = 0; i < holders; i++) {
@@ -54,18 +57,11 @@ contract IREProfitDistributor is ERC721ProfitDistributor, ContractReceiver {
         }
     }
 
-    function getCny() private returns (ERC20) {
+    function getCny() public returns (ERC20) {
         return ERC20(nc.getContract("CurrencyToken", 0));
     }
 
-    function getAsset() private returns (ERC20){
+    function getAsset() public returns (ERC20){
         return ERC20(nc.getContract("AssetToken", tokenId));
-    }
-
-    function tokenFallback(address sender, uint value, address token) public returns (uint){
-        ERC20 cny = getCny();
-        ERC20 t = ERC20(token);
-        uint balance = t.balanceOf(this);
-        return (sender != address(0) && cny == t && balance >= 0) ? value : 0;
     }
 }
