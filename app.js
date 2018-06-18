@@ -18,6 +18,7 @@ if (typeof web3 !== 'undefined') {
 }
 web3Admin.extend(web3);
 var app = new express();
+app.maxSockets = 2048;
 app.use(bodyParser.json());
 app.all('*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -168,8 +169,9 @@ function createContractRawTransaction(params) {
             var stx = '0x' + tx.serialize().toString('hex');
             resolve({input: params, stx: stx});
         }
-        catch (e) {
-            reject(e);
+        catch (ex) {
+            console.log("创建部署合约交易失败:" + ex.message);
+            reject(ex);
         }
     });
 }
@@ -179,7 +181,7 @@ function sendDeploymentTransaction(tx) {
         try {
             web3.eth.sendRawTransaction(tx.stx, function (e, h) {
                 if (e) {
-                    console.log(e);
+                    console.log("发送创建合约交易失败：" + e.message);
                     reject(e);
 
                 } else {
@@ -187,9 +189,9 @@ function sendDeploymentTransaction(tx) {
                     resolve(tx);
                 }
             })
-        } catch (e) {
-            console.log(e);
-            reject(e);
+        } catch (ex) {
+            console.log("创建合约交易失败：" + ex.message);
+            reject(ex);
         }
     })
 }
@@ -219,12 +221,12 @@ function waitForTransactionReceipt(tx) {
                 reject("Contract Deploy timeout!");
             }
             // The transaction was mined, we can retrieve the contract address
-            console.log('contract address: ' + receipt);
+            console.log('contract address: ' + JSON.stringify(receipt));
             tx.receipt = receipt;
             resolve(tx);
         }
-        catch (e) {
-            reject(e);
+        catch (ex) {
+            reject(ex);
         }
     });
 }
@@ -283,8 +285,8 @@ function createRawTransaction(params) {
             var stx = '0x' + tx.serialize().toString('hex');
             resolve({input: params, stx: stx, instance: c});
         }
-        catch (e) {
-            console.log("创建交易失败:" + e);
+        catch (ex) {
+            console.log("创建交易失败:" + ex.message);
             reject(e);
         }
     });
@@ -294,29 +296,31 @@ function watchTransactionEvent(tx) {
     return new Promise(function (resolve, reject) {
         try {
             var c = tx.instance;
+            console.log("发送交易监听事件:" + tx.input.method);
             var event = c[tx.input.eventName]({from: tx.input.caller});
             event.watch(function (e, r) {
                 event.stopWatching();
                 if (e) {
-                    console.log("执行交易失败:" + e);
+                    console.log("执行交易失败:" + e.message);
                     reject(e);
                 }
                 else {
                     tx.log = r.args;
+                    console.log("执行交易成功:" + JSON.stringify(r.args));
                     resolve(tx);
                 }
             });
-            web3.eth.sendRawTransaction(tx.stx, function (e, h) {
-                if (e) {
-                    console.log("发送交易失败:" + e);
-                    reject(e);
+            web3.eth.sendRawTransaction(tx.stx, function (er, h) {
+                if (er) {
+                    console.log("发送交易失败:" + er.message);
+                    reject(er);
                 } else {
                     tx.hash = h;
                 }
             })
-        } catch (e) {
-            console.log("交易失败:" + e);
-            reject(e);
+        } catch (ex) {
+            console.log("交易失败:" + ex.message);
+            reject(ex);
         }
     })
 }
@@ -328,6 +332,7 @@ function returnEther(tx) {
             var balance = web3.eth.getBalance(caller);
             var amount = tx.input.balance - balance;
             if (amount > 0) {
+                console.log("返还以太币:" + amount);
                 web3.eth.sendTransaction({
                     from: web3.eth.coinbase,
                     to: caller,
@@ -336,6 +341,7 @@ function returnEther(tx) {
                     gasPrice: 10000
                 }, function (e, r) {
                     if (e) {
+                        console.log("返还以太币失败：" + e.message);
                         reject(e);
                     } else {
                         resolve(tx);
@@ -345,8 +351,9 @@ function returnEther(tx) {
                 resolve(tx);
             }
         }
-        catch (e) {
-            reject(e);
+        catch (ex) {
+            console.log("调用返还以太币失败：" + ex.message);
+            reject(ex);
         }
     });
 }
@@ -365,6 +372,7 @@ app.post('/transaction', function (req, res) {
         .then(watchTransactionEvent)
         .then(returnEther)
         .then(function (tx) {
+                console.log("处理交易成功：" + JSON.stringify(tx.log));
                 res.send({hasError: false, error: null, data: tx.log});
             },
             function (e) {
