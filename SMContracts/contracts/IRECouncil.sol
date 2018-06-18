@@ -79,27 +79,36 @@ contract IRECouncil is ERC721Council {
         ERC721 asset = getERC721();
         address owner = asset.ownerOf(tokenId);
         if (owner == address(this)) {
-            uint count = 1;
-            while (count < 10) {
-                if (commissions / (10 ** count) == 0) {
-                    break;
+            if (tokenToState[tokenId].abandonFlag) {
+                Init(msg.sender, tokenId, 2);
+            } else {
+                if (tokenToState[tokenId].state.to == address(0)) {
+                    tokenToStates[tokenId].length = 0;
+                    uint count = 1;
+                    while (count < 10) {
+                        if (commissions / (10 ** count) == 0) {
+                            break;
+                        }
+                        count++;
+                    }
+                    uint max = count;
+                    while (max > 0) {
+                        uint i = max - 1;
+                        uint d = commissions / (10 ** i);
+                        uint idx = d % 10;
+                        address state = commission.keys[idx];
+                        uint flag = count - 1 - i;
+                        tokenToStates[tokenId].push(State(state, state, flag));
+                        if (flag > 0) {
+                            tokenToStates[tokenId][flag - 1].to = state;
+                        }
+                        max--;
+                    }
+                    Init(msg.sender, tokenId, 0);
+                } else {
+                    Init(msg.sender, tokenId, 3);
                 }
-                count++;
             }
-            uint max = count;
-            while (max > 0) {
-                uint i = max - 1;
-                uint d = commissions / (10 ** i);
-                uint idx = d % 10;
-                address state = commission.keys[idx];
-                uint flag = count - 1 - i;
-                tokenToStates[tokenId].push(State(state, state, flag));
-                if (flag > 0) {
-                    tokenToStates[tokenId][flag - 1].to = state;
-                }
-                max--;
-            }
-            Init(msg.sender, tokenId, 0);
         } else {
             Init(msg.sender, tokenId, 1);
         }
@@ -160,7 +169,6 @@ contract IRECouncil is ERC721Council {
         ERC721 asset = getERC721();
         address owner = asset.ownerOf(tokenId);
         if (owner == address(this)) {
-            address liquidationCmt = liquidationCommission();
             if (tokenToState[tokenId].abandonFlag) {
                 //如果是废弃的项目，不允许触发next
                 Next(msg.sender, address(0), address(0), tokenId, 2);

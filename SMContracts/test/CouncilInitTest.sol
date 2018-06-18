@@ -36,6 +36,12 @@ contract CouncilInitTest {
         Assert.equal(council.commissionAtOf(1, 1), address(4), "委员会初始化失败");
         Assert.equal(council.commissionAtOf(1, 2), address(10), "委员会初始化失败");
         Assert.equal(council.commissionAtOf(1, 3), address(5), "委员会初始化失败");
+
+        council.init(1, 3594);
+        Assert.equal(council.commissionAtOf(1, 0), address(4), "委员会初始化失败");
+        Assert.equal(council.commissionAtOf(1, 1), address(6), "委员会初始化失败");
+        Assert.equal(council.commissionAtOf(1, 2), address(10), "委员会初始化失败");
+        Assert.equal(council.commissionAtOf(1, 3), address(5), "委员会初始化失败");
         //Assert.equal(council.stateAt(1, 4), 4, "委员会初始化失败");
     }
 }

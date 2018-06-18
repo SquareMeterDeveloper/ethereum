@@ -127,6 +127,7 @@ function prepareParameters(req, options) {
             }
             input.params = arr;
             input.rawParams = params;
+            input.gas = req.body.gas;
             if (verify.flag) {
                 reject(verify);
             } else {
@@ -178,13 +179,16 @@ function sendDeploymentTransaction(tx) {
         try {
             web3.eth.sendRawTransaction(tx.stx, function (e, h) {
                 if (e) {
+                    console.log(e);
                     reject(e);
+
                 } else {
                     tx.hash = h;
                     resolve(tx);
                 }
             })
         } catch (e) {
+            console.log(e);
             reject(e);
         }
     })
@@ -269,7 +273,7 @@ function createRawTransaction(params) {
             var tx = new Tx({
                 nonce: web3.toHex(nonce),
                 gasPrice: web3.toHex(10000),
-                gasLimit: web3.toHex(1000000),
+                gasLimit: params.gas == null ? web3.toHex(100000000) : web3.toHex(params.gas),
                 from: caller,
                 to: contractAddress,
                 value: '0x0',
@@ -280,6 +284,7 @@ function createRawTransaction(params) {
             resolve({input: params, stx: stx, instance: c});
         }
         catch (e) {
+            console.log("创建交易失败:" + e);
             reject(e);
         }
     });
@@ -293,6 +298,7 @@ function watchTransactionEvent(tx) {
             event.watch(function (e, r) {
                 event.stopWatching();
                 if (e) {
+                    console.log("执行交易失败:" + e);
                     reject(e);
                 }
                 else {
@@ -302,12 +308,14 @@ function watchTransactionEvent(tx) {
             });
             web3.eth.sendRawTransaction(tx.stx, function (e, h) {
                 if (e) {
+                    console.log("发送交易失败:" + e);
                     reject(e);
                 } else {
                     tx.hash = h;
                 }
             })
         } catch (e) {
+            console.log("交易失败:" + e);
             reject(e);
         }
     })
@@ -488,7 +496,7 @@ function readKeystore(account) {
             var flag = false;
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
-                console.log(file);
+                //console.log(file);
                 if (file.endsWith(account.address.slice(2))) {
                     flag = true;
                     readFileAsync(keystore + "/" + file).then(function (data) {
