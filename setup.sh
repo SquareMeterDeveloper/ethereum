@@ -27,6 +27,8 @@ mkdir temp
 
 geth --datadir "/home/ethereum/data" init "/home/ethereum/temp/genesis.json"
 cp /home/ethereum/temp/static-nodes.json /home/ethereum/data
+start_chain.sh 中命令添加 console参数后在javascript控制台中执行 web3.personal.newAccount('123456') 创建矿工账号。
+注：因为app.js中node服务在启动时需要自动解锁矿工账号，密码写死为123456，这里创建矿工也用统一密码
 
 //以下是安装Node相关组件
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.29.0/install.sh | bash

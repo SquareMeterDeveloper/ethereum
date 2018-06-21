@@ -13,3 +13,16 @@ static-nodes_p.json prod节点列表
 3.start_miner.sh 启动按需挖矿监控，需安装eth-mine-when-need，参见setup.sh。
 
 *以太坊geth进程重启，则需要重启node和按需挖矿
+
+****特别提醒****
+solc 版本0.4.21
+安装solc npm install -g solc@0.4.21
+编译某合约 solc --bin --abi -o 输出abi和bin的路径 --overwrite 合约名.sol
+truffle 版本4.1.3
+安装truffle npm install -g truffle@4.1.3
+安装完成后需要修改 truffle配置 /usr/local/bin/truffle 中default_tx_values为如下值
+var default_tx_values = {
+    gas: 1000000000000000,
+    gasPrice: 10000,
+    from: null
+  };
