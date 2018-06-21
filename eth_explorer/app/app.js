@@ -1,7 +1,6 @@
 'use strict';
 
 angular.module('ethExplorer', ['ngRoute', 'ui.bootstrap'])
-
     .config(['$routeProvider',
         function ($routeProvider) {
             $routeProvider.when('/', {
@@ -36,10 +35,11 @@ angular.module('ethExplorer', ['ngRoute', 'ui.bootstrap'])
         }])
     .run(function ($rootScope) {
         var web3 = new Web3();
-        var eth_node_url = 'http://localhost:8545'; // TODO: remote URL
+        var eth_node_url = 'http://47.100.197.28:8545'; // TODO: remote URL
         web3.setProvider(new web3.providers.HttpProvider(eth_node_url));
         $rootScope.web3 = web3;
-        $rootScope.naming = "0xb1880755bc1882c3b80ff039fc9ad1854cfd955f";
+        $rootScope.feicode = new Feicode();
+        $rootScope.naming = "0x70f9852a90f16faa789c94cf918786142bff59c4";
         $rootScope.namingAbi = [{
             "constant": false,
             "inputs": [{"name": "_newOperator", "type": "address"}],
@@ -50,20 +50,12 @@ angular.module('ethExplorer', ['ngRoute', 'ui.bootstrap'])
             "type": "function"
         }, {
             "constant": false,
-            "inputs": [{"name": "name", "type": "string"}, {
-                "name": "key",
-                "type": "uint256"
-            }, {"name": "adr", "type": "address"}],
+            "inputs": [{"name": "name", "type": "string"}, {"name": "key", "type": "uint256"}, {
+                "name": "adr",
+                "type": "address"
+            }],
             "name": "setContract",
             "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        }, {
-            "constant": false,
-            "inputs": [{"name": "name", "type": "string"}],
-            "name": "getContract",
-            "outputs": [{"name": "", "type": "address[]"}],
             "payable": false,
             "stateMutability": "nonpayable",
             "type": "function"
@@ -96,6 +88,14 @@ angular.module('ethExplorer', ['ngRoute', 'ui.bootstrap'])
             "inputs": [{"name": "_newOwner", "type": "address"}],
             "name": "transferOwnership",
             "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }, {
+            "constant": false,
+            "inputs": [{"name": "name", "type": "string"}],
+            "name": "getContracts",
+            "outputs": [{"name": "", "type": "address[]"}],
             "payable": false,
             "stateMutability": "nonpayable",
             "type": "function"
@@ -321,6 +321,102 @@ angular.module('ethExplorer', ['ngRoute', 'ui.bootstrap'])
             "name": "TransferOwnership",
             "type": "event"
         }];
+
+        $rootScope.callContract = function (params) {
+            var contractInstance = web3.eth.contract(params.abi).at(params.contract);
+            var arr = params.params;
+            var method = params.method;
+            return arr.length > 0 ? contractInstance[method]["call"].apply(this, arr) : contractInstance[method].call();
+        };
+
+        $rootScope.loadERC20list = function (name) {
+            var addresses = $rootScope.callContract({
+                abi: $rootScope.namingAbi,
+                contract: $rootScope.naming,
+                method: "getContracts",
+                params: [name]
+            });
+            var arr20 = [];
+            for (var i = 0; i < addresses.length; i++) {
+                var address = addresses[i];
+                var symbol = $rootScope.callContract({
+                    contract: address,
+                    abi: $rootScope.abi20,
+                    params: [],
+                    method: "symbol"
+                });
+                var totalSupply = parseInt($rootScope.callContract({
+                    contract: address,
+                    abi: $rootScope.abi20,
+                    params: [],
+                    method: "totalSupply"
+                }));
+                var count = parseInt($rootScope.callContract({
+                    contract: address,
+                    abi: $rootScope.abi20,
+                    params: [],
+                    method: "holdersCount"
+                }));
+                arr20.push({
+                    address: address,
+                    symbol: symbol,
+                    totalSupply: totalSupply,
+                    count: count
+                });
+            }
+            return arr20;
+        };
+
+        $rootScope.loadERC20 = function (address) {
+            var symbol = $rootScope.callContract({
+                contract: address,
+                abi: $rootScope.abi20,
+                params: [],
+                method: "symbol"
+            });
+
+            var totalSupply = parseInt($rootScope.callContract({
+                contract: address,
+                abi: $rootScope.abi20,
+                params: [],
+                method: "totalSupply"
+            }));
+
+            var count = parseInt($rootScope.callContract({
+                contract: address,
+                abi: $rootScope.abi20,
+                params: [],
+                method: "holdersCount"
+            }));
+
+            var holdersAddresses = $rootScope.callContract({
+                contract: address,
+                abi: $rootScope.abi20,
+                params: [],
+                method: "holders"
+            });
+
+            var holders = [];
+            for (var i = 0; i < holdersAddresses.length; i++) {
+                var holder = holdersAddresses[i];
+                var balance = $rootScope.callContract({
+                    contract: address,
+                    abi: $rootScope.abi20,
+                    params: [holder],
+                    method: "balanceOf"
+                });
+                holders.push({
+                    holder: holder,
+                    balance: parseInt(balance)
+                });
+            }
+            return {
+                symbol: symbol,
+                totalSupply: totalSupply,
+                count: count,
+                holders: holders
+            };
+        };
 
         function sleepFor(sleepDuration) {
             var now = new Date().getTime();
