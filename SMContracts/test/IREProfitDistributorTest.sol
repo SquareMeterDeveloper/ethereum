@@ -25,7 +25,7 @@ contract IREProfitDistributorTest is ContractReceiver {
         Assert.equal(asset.balanceOf(acc), 2000, "份额不是2000");
         Assert.equal(cny.balanceOf(acc), 0, "余额不为0");
 
-        for (uint i = 0; i < 1000; i++) {
+        for (uint i = 0; i < 2000; i++) {
             asset.transfer(address(i), 1);
         }
 
@@ -37,8 +37,9 @@ contract IREProfitDistributorTest is ContractReceiver {
         Assert.equal(cny.allowance(this, payer), 110000, "余额不为110000");
 
         payer.pay(2);
-        Assert.equal(cny.allowance(this, payer), 10000, "余额不为10000");
-        Assert.equal(cny.balanceOf(acc), 2000, "余额不为2000");
+
+        Assert.equal(cny.allowance(this, payer), 100, "余额不为100");
+        Assert.equal(cny.balanceOf(acc), 2200, "余额不为2000");
         Assert.equal(cny.balanceOf(address(888)), 1, "余额不为1");
     }
 
